@@ -1,0 +1,28 @@
+# This file is a template, and might need editing before it works on your project.
+# You can copy and paste this template into a new `.gitlab-ci.yml` file.
+# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+
+# Official Node.js image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/node/tags/
+image: node:latest
+
+stages:
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+
+deploy:
+  stage: deploy
+  only:
+    - master
+  script:
+    - apt-get update -qy
+    - apt-get install -y python
+    - curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+    - heroku plugins:install @heroku-cli/plugin-container-registry
+    - echo "$HEROKU_PRODUCTION_KEY" | docker login --username=_ --password-stdin registry.heroku.com
+    - docker build -t registry.heroku.com/$HEROKU_APP_NAME/web .
+    - docker push registry.heroku.com/$HEROKU_APP_NAME/web
+    - heroku container:release web -a $HEROKU_APP_NAME

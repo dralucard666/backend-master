@@ -1,0 +1,41 @@
+scalar DateTime
+
+interface Node {
+  id: ID!
+}
+
+type Subscription {
+  timeSub: currTimeSub
+}
+
+type Query {
+  login(input: LoginRequest!): AuthPayload
+  getAllUsers: [User]
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User
+}
+
+type currTimeSub {
+  time: Int!
+}
+
+input LoginRequest {
+  username: String!
+  password: String!
+}
+
+type AuthPayload {
+  token: String!
+}
+
+input CreateUserInput {
+  username: String!
+  password: String!
+}
+
+type User implements Node {
+  id: ID!
+  username: String!
+}
